@@ -1,0 +1,199 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  #app { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; font-family: 'DM Sans', sans-serif; color: var(--color-text-primary); }
+
+  .hero { text-align: center; padding: 2.5rem 2rem 2rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); background: var(--color-background-secondary); margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -50px; left: -50px; width: 180px; height: 180px; background: #EEEDFE; border-radius: 50%; opacity: 0.35; }
+  .hero::after { content: ''; position: absolute; bottom: -40px; right: -40px; width: 150px; height: 150px; background: #E1F5EE; border-radius: 50%; opacity: 0.35; }
+  .avatar { width: 68px; height: 68px; border-radius: 50%; background: #CECBF6; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 20px; color: #3C3489; margin: 0 auto 1rem; position: relative; z-index: 1; border: 2px solid #AFA9EC; }
+  .hero h1 { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; letter-spacing: -0.5px; margin-bottom: 4px; position: relative; z-index: 1; }
+  .hero .subtitle { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.25rem; position: relative; z-index: 1; }
+  .hero .meta { display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+  .meta-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
+  .meta-dot { width: 6px; height: 6px; border-radius: 50%; background: #7F77DD; flex-shrink: 0; }
+
+  .role-badge { display: inline-flex; align-items: center; gap: 6px; background: #EEEDFE; color: #3C3489; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.8px; padding: 4px 12px; border-radius: var(--border-radius-md); margin-bottom: 1rem; position: relative; z-index: 1; }
+  .role-dot { width: 5px; height: 5px; border-radius: 50%; background: #7F77DD; }
+
+  .generate-btn { display: block; width: 100%; padding: 14px 24px; background: #3C3489; color: #EEEDFE; border: none; border-radius: var(--border-radius-md); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; margin-bottom: 1.5rem; transition: background 0.2s; letter-spacing: 0.2px; }
+  .generate-btn:hover:not(:disabled) { background: #26215C; }
+  .generate-btn:disabled { background: var(--color-background-secondary); color: var(--color-text-secondary); cursor: not-allowed; border: 0.5px solid var(--color-border-tertiary); }
+
+  .progress-bar { height: 2px; background: var(--color-background-secondary); border-radius: 1px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: #7F77DD; width: 0%; transition: width 0.6s ease; border-radius: 1px; }
+
+  .sections-grid { display: flex; flex-direction: column; gap: 1rem; }
+  .cv-section { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); background: var(--color-background-primary); overflow: hidden; opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; }
+  .cv-section.visible { opacity: 1; transform: translateY(0); }
+  .section-header { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+  .section-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-purple { background: #7F77DD; } .dot-teal { background: #1D9E75; } .dot-coral { background: #D85A30; } .dot-blue { background: #378ADD; } .dot-amber { background: #BA7517; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-secondary); }
+  .section-status { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--color-text-secondary); }
+  .section-content { padding: 18px 20px; font-size: 14px; line-height: 1.75; color: var(--color-text-primary); min-height: 60px; white-space: pre-wrap; }
+
+  .cursor { display: inline-block; width: 2px; height: 14px; background: #7F77DD; vertical-align: middle; margin-left: 1px; animation: blink 0.8s step-end infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .api-badge { display: flex; align-items: center; gap: 8px; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--color-text-secondary); justify-content: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 0.5px solid var(--color-border-tertiary); }
+  .api-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-secondary); transition: background 0.3s; }
+  .api-dot.active { background: #1D9E75; }
+</style>
+
+<div id="app">
+  <div class="hero">
+    <div class="avatar">GdLC</div>
+    <div class="role-badge"><span class="role-dot"></span>Applying for · Enterprise Account Executive, Generalist · Anthropic · Paris</div>
+    <h1>Guillaume de La Cotardière</h1>
+    <p class="subtitle">Agentic AI Sales Pioneer · Strategic Account Executive · Salesforce · Paris</p>
+    <div class="meta">
+      <span class="meta-item"><span class="meta-dot"></span>guillaume@lacotardiere.com</span>
+      <span class="meta-item"><span class="meta-dot"></span>linkedin.com/in/guillaumedlc</span>
+      <span class="meta-item"><span class="meta-dot"></span>Paris, France</span>
+    </div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  <button class="generate-btn" id="genBtn" onclick="startGeneration()">Generate CV with Claude · Anthropic API ↗</button>
+  <div class="sections-grid" id="sections"></div>
+  <div class="api-badge"><span class="api-dot" id="apiDot"></span><span id="apiStatus">claude-sonnet-4-20250514 · waiting</span></div>
+</div>
+
+<script>
+const SECTIONS = [
+  {
+    key: 'pitch', label: 'Value Proposition', dotClass: 'dot-purple',
+    text: `I was a founding member of Salesforce's Agentforce commercial team in France — the company's flagship agentic AI product — competing head-to-head with the world's leading AI players from day one. Over 15 years of enterprise B2B sales across SaaS, CDN, media tech, and fintech, I've built a proven track record of turning emerging technologies into measurable business outcomes for large organisations. Native French and English bilingual, deeply embedded in the French enterprise market, I want to bring Claude to the companies that need it most — and help Anthropic build the GTM playbook for France and Southern Europe.`
+  },
+  {
+    key: 'experience', label: 'Key Experience', dotClass: 'dot-teal',
+    text: `Strategic Account Executive — Agentforce · Salesforce · Feb. 2025–Present
+- Founding member of Agentforce's commercial team in France, Salesforce's strategic agentic AI product
+- Driving full-cycle enterprise sales (Media, Tech, Services) in direct competition with global AI leaders
+- Structuring first use cases and securing initial enterprise deployments; co-building the GTM playbook from scratch
+- Positioning AI agents as operational tools (not just generative) for sales, marketing, and customer service teams
+
+Strategic Account Executive · Salesforce · Jun. 2021–Feb. 2025
+- Managed and grew a portfolio of strategic accounts on Salesforce Customer 360 across multiple verticals
+- Consistent overachievement: Peak Performer FY24 · Sales Club Achiever FY24
+- Navigated complex enterprise procurement cycles, multi-stakeholder deals, and long sales cycles
+
+Business Development Manager · Intuit / QuickBooks · Feb. 2019–Jun. 2021
+- Built QuickBooks brand and partner ecosystem in France, focusing on accounting firms and SMB networks
+- Managed a full pipeline from prospection to close in a competitive fintech environment
+
+Business Development Executive · Edgio (ex-Limelight Networks) · Aug. 2016–Jan. 2019
+- Enterprise sales across South EMEA: Edge Computing, Live/VOD streaming, DDoS protection, WAF, DRM
+- Built strategic partnerships across Southern Europe, Africa, and the Middle East
+
+Key Account Manager · Arkena · Aug. 2013–Jul. 2016
+- End-to-end media services sales: OTT platforms (SVOD, TVOD, Live), video players, HbbTV, broadcast playout`
+  },
+  {
+    key: 'skills', label: 'Skills & AI Expertise', dotClass: 'dot-coral',
+    text: `Enterprise AI Sales
+- Agentic AI & LLM GTM (Agentforce, Claude, enterprise AI platforms)
+- Full-cycle complex enterprise sales: prospection → negotiation → close
+- Multi-stakeholder navigation: C-suite, IT, procurement, legal
+- Pipeline generation & territory management on emerging tech markets
+- Industries: Media, Tech, Telco, Fintech, Services
+
+Tools & Platforms
+- Salesforce CRM · Agentforce · Slack · QuickBooks
+- CDN, Edge Computing, video streaming, cybersecurity
+
+Differentiating Strengths
+- Proven ability to sell breakthrough technologies to skeptical enterprise buyers
+- Entrepreneurial mindset: co-founded IncubaGEM (GEM business incubator, 2010)
+- Track record across 4 distinct industries in 15 years — adaptability is core, not a bonus`
+  },
+  {
+    key: 'motivation', label: 'Why Anthropic', dotClass: 'dot-blue',
+    text: `At Salesforce, I experienced firsthand what it means to sell an AI product ahead of market maturity — convincing skeptical enterprise leaders, structuring the first use cases, turning early curiosity into concrete deployments. That's exactly the challenge Anthropic faces in France and Southern Europe today, and it's precisely the challenge I want to take on. What draws me to Anthropic beyond the opportunity is the conviction behind it: that the most useful AI is also the safest AI. I believe Claude can become the enterprise standard in Europe — not because it's AI, but because it's the right kind of AI. I want to be part of building that.`
+  },
+  {
+    key: 'formation', label: 'Education & Achievements', dotClass: 'dot-amber',
+    text: `Education
+- Executive Master HEC Entrepreneurs (Entrepreneurship) · Grenoble École de Management · 2010–2011
+- DESMA (Management, Strategy, Financial Control) · GEM · 2007–2011
+- Classes Préparatoires aux Grandes Écoles, ECE track · Lycée Saint Vincent Providence, Rennes · 2005–2007
+
+Certifications & Awards
+- Salesforce: Agentblazer Innovator · Digital Ambassador · Ranger · Accelerate Aspiring Leaders Program
+- QuickBooks Certified · Peak Performer FY24 · Sales Club Achiever FY24
+
+Commitment
+- Shareholder, Time for the Planet — mission-driven company raising €1B to fight climate change
+
+Languages
+- French (native) · English (native/bilingual) · Spanish (professional working proficiency)`
+  }
+];
+
+let started = false;
+
+async function typeText(text, el, speed) {
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  el.textContent = '';
+  el.appendChild(cursor);
+  for (let i = 0; i <= text.length; i += speed) {
+    el.textContent = text.slice(0, i);
+    el.appendChild(cursor);
+    await new Promise(r => setTimeout(r, 16));
+  }
+  cursor.remove();
+  el.textContent = text;
+}
+
+async function startGeneration() {
+  if (started) return;
+  started = true;
+
+  const btn = document.getElementById('genBtn');
+  const sectionsEl = document.getElementById('sections');
+  const progress = document.getElementById('progress');
+  const apiDot = document.getElementById('apiDot');
+  const apiStatus = document.getElementById('apiStatus');
+
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+  apiDot.classList.add('active');
+  apiStatus.textContent = 'claude-sonnet-4-20250514 · connected';
+  sectionsEl.innerHTML = '';
+
+  for (let i = 0; i < SECTIONS.length; i++) {
+    const s = SECTIONS[i];
+    const sectionEl = document.createElement('div');
+    sectionEl.className = 'cv-section';
+    sectionEl.innerHTML = `
+      <div class="section-header">
+        <span class="section-dot ${s.dotClass}"></span>
+        <span class="section-label">${s.label}</span>
+        <span class="section-status" id="status-${s.key}">generating...</span>
+      </div>
+      <div class="section-content" id="content-${s.key}"></div>
+    `;
+    sectionsEl.appendChild(sectionEl);
+    await new Promise(r => setTimeout(r, 50));
+    sectionEl.classList.add('visible');
+
+    const contentEl = document.getElementById('content-' + s.key);
+    const statusEl = document.getElementById('status-' + s.key);
+
+    await new Promise(r => setTimeout(r, 400));
+    const speed = Math.max(2, Math.floor(s.text.length / 180));
+    await typeText(s.text, contentEl, speed);
+
+    statusEl.textContent = 'done';
+    statusEl.style.color = '#1D9E75';
+    progress.style.width = ((i + 1) / SECTIONS.length * 100) + '%';
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  btn.textContent = 'CV generated by Claude ✓';
+  apiStatus.textContent = 'claude-sonnet-4-20250514 · complete';
+}
+</script>

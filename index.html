@@ -21,7 +21,6 @@
   .lang-btn { padding: 0 18px; height: 48px; background: transparent; border: none; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.5px; cursor: pointer; color: var(--color-text-secondary); transition: background 0.15s, color 0.15s; }
   .lang-btn.active { background: #3C3489; color: #EEEDFE; }
   .lang-btn:not(.active):hover { background: var(--color-background-secondary); }
-
   .generate-btn { flex: 1; padding: 14px 24px; background: #3C3489; color: #EEEDFE; border: none; border-radius: var(--border-radius-md); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; letter-spacing: 0.2px; }
   .generate-btn:hover:not(:disabled) { background: #26215C; }
   .generate-btn:disabled { background: var(--color-background-secondary); color: var(--color-text-secondary); cursor: not-allowed; border: 0.5px solid var(--color-border-tertiary); }
@@ -37,7 +36,20 @@
   .dot-purple { background: #7F77DD; } .dot-teal { background: #1D9E75; } .dot-coral { background: #D85A30; } .dot-blue { background: #378ADD; } .dot-amber { background: #BA7517; }
   .section-label { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-secondary); }
   .section-status { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--color-text-secondary); }
-  .section-content { padding: 18px 20px; font-size: 14px; line-height: 1.75; color: var(--color-text-primary); min-height: 60px; white-space: pre-wrap; }
+  .section-content { padding: 18px 20px; font-size: 14px; line-height: 1.75; color: var(--color-text-primary); min-height: 60px; }
+  .section-content .job-title { font-weight: 500; font-size: 14px; display: block; margin-top: 14px; margin-bottom: 2px; }
+  .section-content .job-title:first-child { margin-top: 0; }
+  .section-content ul { padding-left: 18px; margin: 4px 0 0; }
+  .section-content ul li { margin-bottom: 3px; }
+  .section-content p { margin-bottom: 10px; }
+  .section-content p:last-child { margin-bottom: 0; }
+
+  .why-btn-wrap { opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease; margin-top: 1rem; }
+  .why-btn-wrap.visible { opacity: 1; transform: translateY(0); }
+  .why-btn { width: 100%; padding: 18px 24px; background: transparent; border: 0.5px solid #7F77DD; border-radius: var(--border-radius-lg); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 400; color: #534AB7; cursor: pointer; transition: background 0.2s, color 0.2s; font-style: italic; letter-spacing: 0.1px; }
+  .why-btn:hover { background: #EEEDFE; }
+  .why-section { border: 0.5px solid #AFA9EC; border-radius: var(--border-radius-lg); background: var(--color-background-primary); overflow: hidden; opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; margin-top: 1rem; }
+  .why-section.visible { opacity: 1; transform: translateY(0); }
 
   .cursor { display: inline-block; width: 2px; height: 14px; background: #7F77DD; vertical-align: middle; margin-left: 1px; animation: blink 0.8s step-end infinite; }
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
@@ -61,7 +73,6 @@
   </div>
 
   <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-
   <div class="controls">
     <div class="lang-toggle">
       <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
@@ -71,188 +82,244 @@
   </div>
 
   <div class="sections-grid" id="sections"></div>
+  <div class="why-btn-wrap" id="whyBtnWrap">
+    <button class="why-btn" id="whyBtn" onclick="revealWhy()"></button>
+  </div>
+  <div class="why-section" id="whySection">
+    <div class="section-header">
+      <span class="section-dot dot-purple"></span>
+      <span class="section-label" id="whyLabel"></span>
+      <span class="section-status" id="whyStatus"></span>
+    </div>
+    <div class="section-content" id="whyContent"></div>
+  </div>
+
   <div class="api-badge"><span class="api-dot" id="apiDot"></span><span id="apiStatus">claude-sonnet-4-20250514 · waiting</span></div>
 </div>
 
 <script>
 const CONTENT = {
-  en: [
-    {
-      key: 'pitch', label: 'Value Proposition & Why Anthropic', dotClass: 'dot-purple',
-      text: `A few months into selling Agentforce, I had a meeting with a CDO at a large French media group. He'd seen every AI pitch in the book. He asked me one question: "How do I know it won't make something up and I'll find out on the front page of Le Monde?" I didn't have a perfect answer. But that question stuck with me — because it's the right question. It's also, as far as I can tell, the question Anthropic has been trying to answer since day one.
-
-I was a founding member of Salesforce's Agentforce commercial team in France — the company's strategic agentic AI product — competing head-to-head with the world's leading AI players from day one. Across hundreds of enterprise conversations, I've seen what separates the companies making real progress with AI from those that don't: it comes down to trust. Claude doesn't feel like a demo. It feels like something you can actually build on.
-
-I want to be the person who brings that to French and Southern European enterprises — not by overselling, but by helping them figure out where AI genuinely helps and where it doesn't. France is a market where that nuance matters: enterprise buyers here are rigorous, skeptical, and unimpressed by hype. I've spent 15 years learning to navigate exactly that.
-
-I also care about this beyond the role. I'm a shareholder in Time for the Planet because the companies you back say something about what you believe. Anthropic's approach to AI safety isn't a talking point for me — it's the reason I'd rather work here than anywhere else in this space. I've built GTM from scratch before, in markets that weren't ready. I know how to move without a playbook.`
-    },
-    {
-      key: 'experience', label: 'Key Experience', dotClass: 'dot-teal',
-      text: `Strategic Account Executive — Agentforce · Salesforce · Feb. 2025–Present
-- Founding member of Agentforce's commercial team in France, Salesforce's strategic agentic AI product
-- Full-cycle enterprise sales across Media, Tech and Services accounts, competing with global AI leaders
-- Co-built the GTM playbook from scratch: structuring first use cases, securing initial deployments
-- Repositioning AI from generative to truly operational — agents that understand context, decide, and act end-to-end within Salesforce
-
-Strategic Account Executive · Salesforce · Jun. 2021–Feb. 2025
-- Managed and grew a portfolio of strategic enterprise accounts on Salesforce Customer 360
-- Navigated complex procurement cycles, multi-stakeholder deals, and long enterprise sales cycles
-- Peak Performer FY24 · Sales Club Achiever FY24
-
-Business Development Manager · Intuit / QuickBooks · Feb. 2019–Jun. 2021
-- Built the QuickBooks brand and accounting firm partner network in France
-- Full pipeline ownership in a competitive fintech environment
-
-Business Development Executive · Edgio (ex-Limelight Networks) · Aug. 2016–Jan. 2019
-- Enterprise sales across South EMEA: Edge Computing, Live/VOD streaming, DDoS, WAF, DRM
-- Built strategic partnerships across Southern Europe, Africa, and the Middle East
-
-Key Account Manager · Arkena · Aug. 2013–Jul. 2016
-- End-to-end media services: OTT platforms (SVOD, TVOD, Live), video players, HbbTV, broadcast playout
-- Managed and grew major media accounts from initial deal to long-term partnership
-
-Senior Business Developer · Beijaflore · Jan. 2013–Aug. 2013
-- Enterprise sales and key account management in media & telecom consulting
-- Mentored a junior business developer; helped onboard new hires
-- Collaborated with industry experts to shape a consulting offer grounded in real client insight
-
-Business Developer · Beijaflore · May 2011–Jan. 2013
-- Enterprise sales and account development in media & telecom
-- Built and managed a pipeline across major accounts; developed core sales and process skills
-
-Co-founder · IncubaGEM · Sep. 2010–Jun. 2011
-- Founded IncubaGEM, the startup incubator of Grenoble École de Management
-- Secured partnerships to support entrepreneurs in their early-stage ventures
-- 15 student projects incubated in the founding cohort (April 2011)`
-    },
-    {
-      key: 'skills', label: 'Skills & AI Expertise', dotClass: 'dot-coral',
-      text: `Enterprise AI Sales
-- Agentic AI & LLM go-to-market (Agentforce, Claude, enterprise AI platforms)
-- Full-cycle complex enterprise sales: prospecting → negotiation → close
-- Multi-stakeholder navigation: C-suite, IT, legal, procurement
-- Pipeline generation and territory management in emerging tech markets
-- Vertical expertise: Media, Tech, Telco, Fintech, Professional Services
-
-Tools & Platforms
-- Salesforce CRM · Agentforce · Slack · QuickBooks
-- CDN, Edge Computing, video streaming, cybersecurity (DDoS, WAF, DRM)
-
-Differentiating Strengths
-- Proven ability to sell breakthrough technologies to skeptical, senior enterprise buyers
-- Entrepreneurial mindset: co-founded IncubaGEM (GEM business incubator, 2010)
-- Track record across 5+ distinct industries in 15 years — genuine adaptability, not surface-level versatility`
-    },
-    {
-      key: 'formation', label: 'Education & Achievements', dotClass: 'dot-amber',
-      text: `Education
-- Executive Master HEC Entrepreneurs (Entrepreneurship) · Grenoble École de Management · 2010–2011
-- DESMA (Management, Strategy, Financial Control) · GEM · 2007–2011
-- Classes Préparatoires ECE · Lycée Saint Vincent Providence, Rennes · 2005–2007
-
-Certifications & Awards
-- Salesforce: Agentblazer Innovator · Digital Ambassador · Ranger · Accelerate Aspiring Leaders Program
-- QuickBooks Certified · Peak Performer FY24 · Sales Club Achiever FY24
-
-Commitment
-- Shareholder, Time for the Planet — raising €1B to fund companies fighting climate change
-
-Languages
-- French (native) · English (native/bilingual) · Spanish (professional)`
-    }
-  ],
-
-  fr: [
-    {
-      key: 'pitch', label: 'Proposition de valeur & Pourquoi Anthropic', dotClass: 'dot-purple',
-      text: `Quelques mois après le lancement d'Agentforce, j'ai eu un rendez-vous avec le CDO d'un grand groupe média français. Il avait vu tous les pitchs IA du marché. Il m'a posé une seule question : « Comment je sais que ça ne va pas inventer quelque chose et que je vais l'apprendre en une du Monde ? » Je n'avais pas de réponse parfaite. Mais cette question m'a marqué — parce que c'est la bonne question. C'est aussi, autant que je sache, celle à laquelle Anthropic cherche à répondre depuis le premier jour.
-
-Membre fondateur de l'équipe commerciale Agentforce en France — le produit d'IA agentique stratégique de Salesforce — j'ai été en première ligne face aux leaders mondiaux de l'IA dès le lancement. À travers des centaines de conversations avec des décideurs enterprise, j'ai compris ce qui distingue les entreprises qui avancent vraiment avec l'IA des autres : la confiance. Claude ne ressemble pas à une démo. C'est quelque chose sur lequel on peut vraiment construire.
-
-Je veux être la personne qui apporte cela aux entreprises françaises et d'Europe du Sud — pas en survendant, mais en les aidant à identifier là où l'IA apporte une valeur réelle et là où elle n'en apporte pas. C'est un marché où cette nuance compte : les acheteurs enterprise en France sont rigoureux, sceptiques, et peu sensibles au bruit médiatique. J'ai passé 15 ans à apprendre à avoir ces conversations.
-
-Je m'intéresse aussi à cette mission au-delà du poste. Je suis actionnaire de Time for the Planet parce que les entreprises qu'on soutient disent quelque chose de ce en quoi on croit. L'approche d'Anthropic sur la sécurité de l'IA n'est pas un argument commercial pour moi — c'est la raison pour laquelle je préfère travailler ici plutôt qu'ailleurs. J'ai déjà construit des GTM from scratch, sur des marchés qui n'étaient pas prêts. Je sais avancer sans playbook.`
-    },
-    {
-      key: 'experience', label: 'Expériences clés', dotClass: 'dot-teal',
-      text: `Strategic Account Executive — Agentforce · Salesforce · fév. 2025–présent
-- Membre fondateur de l'équipe commerciale Agentforce en France, produit d'IA agentique stratégique de Salesforce
-- Vente enterprise cycle complet sur comptes Média, Tech, Services, en compétition directe avec les leaders mondiaux de l'IA
-- Co-construction du playbook GTM from scratch : structuration des premiers cas d'usage, sécurisation des premiers déploiements
-- Repositionnement de l'IA : du génératif vers l'opérationnel — des agents qui comprennent le contexte métier, décident et agissent de bout en bout
-
-Strategic Account Executive · Salesforce · juin 2021–fév. 2025
-- Gestion et développement d'un portefeuille de comptes stratégiques sur Salesforce Customer 360
-- Navigation de cycles d'achat complexes, deals multi-parties prenantes, cycles longs
-- Peak Performer FY24 · Sales Club Achiever FY24
-
-Business Development Manager · Intuit / QuickBooks · fév. 2019–juin 2021
-- Développement de la marque QuickBooks et du réseau de partenaires experts-comptables en France
-- Ownership complet du pipeline dans un environnement fintech compétitif
-
-Business Development Executive · Edgio (ex-Limelight Networks) · août 2016–janv. 2019
-- Vente enterprise South EMEA : Edge Computing, streaming Live/VOD, protection DDoS, WAF, DRM
-- Construction de partenariats stratégiques en Europe du Sud, Afrique et Moyen-Orient
-
-Key Account Manager · Arkena · août 2013–juil. 2016
-- Services médias bout en bout : plateformes OTT (SVOD, TVOD, Live), player vidéo, HbbTV, playout broadcast
-- Gestion et développement de grands comptes médias sur la durée
-
-Senior Business Developer · Beijaflore · janv. 2013–août 2013
-- Développement commercial et relation grands comptes dans les médias et télécoms
-- Mentoring d'un business developer junior ; formation des nouveaux arrivants
-- Collaboration avec des experts sectoriels pour construire une offre de conseil ancrée dans le terrain
-
-Business Developer · Beijaflore · mai 2011–janv. 2013
-- Développement commercial et gestion de grands comptes médias et télécoms
-- Construction et animation d'un pipeline sur des comptes majeurs
-
-Co-fondateur · IncubaGEM · sept. 2010–juin 2011
-- Création d'IncubaGEM, l'incubateur de Grenoble École de Management
-- Développement de partenariats pour accompagner les entrepreneurs dans leurs premiers pas
-- 15 projets incubés lors de la première promotion (avril 2011)`
-    },
-    {
-      key: 'skills', label: 'Compétences & IA', dotClass: 'dot-coral',
-      text: `Expertise commerciale IA
-- Go-to-market IA agentique et LLM (Agentforce, Claude, plateformes IA enterprise)
-- Vente enterprise cycle complet : prospection → négociation → closing
-- Navigation multi-parties prenantes : direction générale, DSI, juridique, achats
-- Génération de pipeline et gestion de territoire sur marchés technologiques émergents
-- Verticales : Médias, Tech, Télécoms, Fintech, Services
-
-Outils & plateformes
-- Salesforce CRM · Agentforce · Slack · QuickBooks
-- CDN, Edge Computing, streaming vidéo, cybersécurité (DDoS, WAF, DRM)
-
-Points de différenciation
-- Capacité avérée à vendre des technologies de rupture à des acheteurs enterprise exigeants et sceptiques
-- Culture entrepreneuriale : co-fondateur d'IncubaGEM (incubateur GEM, 2010)
-- Expérience sur 5+ secteurs distincts en 15 ans — adaptabilité profonde, pas superficielle`
-    },
-    {
-      key: 'formation', label: 'Formation & distinctions', dotClass: 'dot-amber',
-      text: `Formation
-- Mastère Spécialisé HEC Entrepreneurs (Entrepreneuriat) · Grenoble École de Management · 2010–2011
-- DESMA (Management, Stratégie, Contrôle de gestion) · GEM · 2007–2011
-- Classes Préparatoires ECE · Lycée Saint Vincent Providence, Rennes · 2005–2007
-
-Certifications & récompenses
-- Salesforce : Agentblazer Innovator · Digital Ambassador · Ranger · Accelerate Aspiring Leaders Program
-- Certification QuickBooks · Peak Performer FY24 · Sales Club Achiever FY24
-
-Engagement
-- Actionnaire Time for the Planet — entreprise à mission visant 1 Md€ pour lutter contre le réchauffement climatique
-
-Langues
-- Français (langue maternelle) · Anglais (bilingue) · Espagnol (niveau professionnel)`
-    }
-  ]
+  en: {
+    sections: [
+      {
+        key: 'experience', label: 'Key Experience', dotClass: 'dot-teal',
+        html: `
+          <span class="job-title"><strong>Strategic Account Executive — Agentforce</strong> · Salesforce · Feb. 2025–Present</span>
+          <ul>
+            <li><strong>Founding member of Agentforce's commercial team in France</strong>, Salesforce's strategic agentic AI product</li>
+            <li><strong>Full-cycle enterprise sales</strong> across Media, Tech and Services accounts, competing with <strong>global AI leaders</strong></li>
+            <li><strong>Co-built the GTM playbook from scratch</strong>: structuring first use cases, securing initial deployments</li>
+            <li>Repositioning AI from generative to truly <strong>operational</strong> — agents that understand context, decide, and act end-to-end</li>
+          </ul>
+          <span class="job-title"><strong>Strategic Account Executive</strong> · Salesforce · Jun. 2021–Feb. 2025</span>
+          <ul>
+            <li>Managed and grew a portfolio of <strong>strategic enterprise accounts</strong> on Salesforce Customer 360</li>
+            <li>Navigated <strong>complex procurement cycles</strong>, multi-stakeholder deals, and long enterprise sales cycles</li>
+            <li><strong>Peak Performer FY24 · Sales Club Achiever FY24</strong></li>
+          </ul>
+          <span class="job-title"><strong>Business Development Manager</strong> · Intuit / QuickBooks · Feb. 2019–Jun. 2021</span>
+          <ul>
+            <li>Built the QuickBooks brand and <strong>accounting firm partner network</strong> in France</li>
+            <li><strong>Full pipeline ownership</strong> in a competitive fintech environment</li>
+          </ul>
+          <span class="job-title"><strong>Business Development Executive</strong> · Edgio (ex-Limelight Networks) · Aug. 2016–Jan. 2019</span>
+          <ul>
+            <li><strong>Enterprise sales across South EMEA</strong>: Edge Computing, Live/VOD streaming, DDoS, WAF, DRM</li>
+            <li>Built <strong>strategic partnerships</strong> across Southern Europe, Africa, and the Middle East</li>
+          </ul>
+          <span class="job-title"><strong>Key Account Manager</strong> · Arkena · Aug. 2013–Jul. 2016</span>
+          <ul>
+            <li>End-to-end media services: OTT platforms (SVOD, TVOD, Live), video players, HbbTV, broadcast playout</li>
+            <li>Managed and grew <strong>major media accounts</strong> from initial deal to long-term partnership</li>
+          </ul>
+          <span class="job-title"><strong>Senior Business Developer</strong> · Beijaflore · Jan. 2013–Aug. 2013</span>
+          <ul>
+            <li>Enterprise sales and <strong>key account management</strong> in media & telecom consulting</li>
+            <li>Mentored a junior business developer; contributed to onboarding new hires</li>
+            <li>Collaborated with industry experts to shape a <strong>consulting offer grounded in real client insight</strong></li>
+          </ul>
+          <span class="job-title"><strong>Business Developer</strong> · Beijaflore · May 2011–Jan. 2013</span>
+          <ul>
+            <li>Enterprise sales and account development in <strong>media & telecom</strong></li>
+            <li>Built and managed a pipeline across major accounts</li>
+          </ul>
+          <span class="job-title"><strong>Co-founder</strong> · IncubaGEM · Sep. 2010–Jun. 2011</span>
+          <ul>
+            <li>Founded IncubaGEM, the <strong>startup incubator of Grenoble École de Management</strong></li>
+            <li>Secured partnerships to support entrepreneurs in their early-stage ventures</li>
+            <li><strong>15 student projects incubated</strong> in the founding cohort (April 2011)</li>
+          </ul>`
+      },
+      {
+        key: 'skills', label: 'Skills & AI Expertise', dotClass: 'dot-coral',
+        html: `
+          <p><strong>Enterprise AI Sales</strong></p>
+          <ul>
+            <li><strong>Agentic AI & LLM go-to-market</strong> (Agentforce, Claude, enterprise AI platforms)</li>
+            <li><strong>Full-cycle complex enterprise sales</strong>: prospecting → negotiation → close</li>
+            <li><strong>Multi-stakeholder navigation</strong>: C-suite, IT, legal, procurement</li>
+            <li>Pipeline generation and <strong>territory management in emerging tech markets</strong></li>
+            <li>Vertical expertise: <strong>Media, Tech, Telco, Fintech, Professional Services</strong></li>
+          </ul>
+          <p style="margin-top:12px"><strong>Tools & Platforms</strong></p>
+          <ul>
+            <li>Salesforce CRM · Agentforce · Slack · QuickBooks</li>
+            <li>CDN, Edge Computing, video streaming, cybersecurity (DDoS, WAF, DRM)</li>
+          </ul>
+          <p style="margin-top:12px"><strong>Differentiating Strengths</strong></p>
+          <ul>
+            <li>Proven ability to <strong>sell breakthrough technologies to skeptical enterprise buyers</strong></li>
+            <li>Entrepreneurial mindset: <strong>co-founded IncubaGEM</strong> (GEM business incubator, 2010)</li>
+            <li>Track record across <strong>5+ distinct industries in 15 years</strong> — genuine adaptability</li>
+          </ul>`
+      },
+      {
+        key: 'formation', label: 'Education & Achievements', dotClass: 'dot-amber',
+        html: `
+          <p><strong>Education</strong></p>
+          <ul>
+            <li>Executive Master <strong>HEC Entrepreneurs</strong> (Entrepreneurship) · Grenoble École de Management · 2010–2011</li>
+            <li>DESMA (Management, Strategy, Financial Control) · GEM · 2007–2011</li>
+            <li>Classes Préparatoires ECE · Lycée Saint Vincent Providence, Rennes · 2005–2007</li>
+          </ul>
+          <p style="margin-top:12px"><strong>Certifications & Awards</strong></p>
+          <ul>
+            <li>Salesforce: <strong>Agentblazer Innovator · Digital Ambassador · Ranger</strong> · Accelerate Aspiring Leaders Program</li>
+            <li>QuickBooks Certified · <strong>Peak Performer FY24 · Sales Club Achiever FY24</strong></li>
+          </ul>
+          <p style="margin-top:12px"><strong>Commitment</strong></p>
+          <ul>
+            <li>Shareholder, <strong>Time for the Planet</strong> — raising €1B to fund companies fighting climate change</li>
+          </ul>
+          <p style="margin-top:12px"><strong>Languages</strong></p>
+          <ul>
+            <li><strong>French (native) · English (native/bilingual)</strong> · Spanish (professional)</li>
+          </ul>`
+      }
+    ],
+    whyBtn: 'Do you want to discover why I want to join Anthropic?',
+    whyLabel: 'Why Anthropic',
+    whyStatus: 'generating...',
+    whyDone: 'done',
+    whyHtml: `
+      <p>A few months into selling Agentforce, I had a meeting with a CDO at a large French media group. He'd seen every AI pitch in the book. He asked me one question: <strong>"How do I know it won't make something up and I'll find out on the front page of Le Monde?"</strong> I didn't have a perfect answer. But that question stuck with me — because it's the right question. It's also, as far as I can tell, the question <strong>Anthropic has been trying to answer since day one</strong>.</p>
+      <p>Across hundreds of enterprise conversations, I've seen what separates the companies making real progress with AI from those that don't: it comes down to <strong>trust</strong>. Claude doesn't feel like a demo. It feels like something you can actually build on. And that makes it <strong>easier to sell honestly</strong> — which is the only way I know how to sell.</p>
+      <p>I want to be the person who brings that to <strong>French and Southern European enterprises</strong> — not by overselling, but by helping them figure out where AI genuinely helps and where it doesn't. France is a market where that nuance matters: enterprise buyers here are rigorous, skeptical, and unimpressed by hype. <strong>I've spent 15 years learning to navigate exactly that.</strong></p>
+      <p>I also care about this beyond the role. I'm a shareholder in Time for the Planet because the companies you back say something about what you believe. <strong>Anthropic's approach to AI safety isn't a talking point for me</strong> — it's the reason I'd rather work here than anywhere else in this space. I've built GTM from scratch before, in markets that weren't ready. I know how to move without a playbook.</p>`
+  },
+  fr: {
+    sections: [
+      {
+        key: 'experience', label: 'Expériences clés', dotClass: 'dot-teal',
+        html: `
+          <span class="job-title"><strong>Strategic Account Executive — Agentforce</strong> · Salesforce · fév. 2025–présent</span>
+          <ul>
+            <li><strong>Membre fondateur de l'équipe commerciale Agentforce en France</strong>, produit d'IA agentique stratégique de Salesforce</li>
+            <li><strong>Vente enterprise cycle complet</strong> sur comptes Média, Tech, Services, en compétition directe avec les <strong>leaders mondiaux de l'IA</strong></li>
+            <li><strong>Co-construction du playbook GTM from scratch</strong> : structuration des premiers cas d'usage, sécurisation des premiers déploiements</li>
+            <li>Repositionnement de l'IA : du génératif vers l'<strong>opérationnel</strong> — des agents qui comprennent le contexte, décident et agissent de bout en bout</li>
+          </ul>
+          <span class="job-title"><strong>Strategic Account Executive</strong> · Salesforce · juin 2021–fév. 2025</span>
+          <ul>
+            <li>Gestion et développement d'un portefeuille de <strong>comptes stratégiques enterprise</strong> sur Salesforce Customer 360</li>
+            <li>Navigation de <strong>cycles d'achat complexes</strong>, deals multi-parties prenantes, cycles longs</li>
+            <li><strong>Peak Performer FY24 · Sales Club Achiever FY24</strong></li>
+          </ul>
+          <span class="job-title"><strong>Business Development Manager</strong> · Intuit / QuickBooks · fév. 2019–juin 2021</span>
+          <ul>
+            <li>Développement de la marque QuickBooks et du <strong>réseau de partenaires experts-comptables</strong> en France</li>
+            <li><strong>Ownership complet du pipeline</strong> dans un environnement fintech compétitif</li>
+          </ul>
+          <span class="job-title"><strong>Business Development Executive</strong> · Edgio (ex-Limelight Networks) · août 2016–janv. 2019</span>
+          <ul>
+            <li><strong>Vente enterprise South EMEA</strong> : Edge Computing, streaming Live/VOD, protection DDoS, WAF, DRM</li>
+            <li>Construction de <strong>partenariats stratégiques</strong> en Europe du Sud, Afrique et Moyen-Orient</li>
+          </ul>
+          <span class="job-title"><strong>Key Account Manager</strong> · Arkena · août 2013–juil. 2016</span>
+          <ul>
+            <li>Services médias bout en bout : plateformes OTT (SVOD, TVOD, Live), player vidéo, HbbTV, playout broadcast</li>
+            <li>Gestion et développement de <strong>grands comptes médias</strong> sur la durée</li>
+          </ul>
+          <span class="job-title"><strong>Senior Business Developer</strong> · Beijaflore · janv. 2013–août 2013</span>
+          <ul>
+            <li>Développement commercial et <strong>relation grands comptes</strong> dans les médias et télécoms</li>
+            <li>Mentoring d'un business developer junior ; formation des nouveaux arrivants</li>
+            <li>Collaboration avec des experts sectoriels pour construire une <strong>offre de conseil ancrée dans le terrain</strong></li>
+          </ul>
+          <span class="job-title"><strong>Business Developer</strong> · Beijaflore · mai 2011–janv. 2013</span>
+          <ul>
+            <li>Développement commercial et gestion de <strong>grands comptes médias et télécoms</strong></li>
+            <li>Construction et animation d'un pipeline sur des comptes majeurs</li>
+          </ul>
+          <span class="job-title"><strong>Co-fondateur</strong> · IncubaGEM · sept. 2010–juin 2011</span>
+          <ul>
+            <li>Création d'IncubaGEM, <strong>l'incubateur de Grenoble École de Management</strong></li>
+            <li>Développement de partenariats pour accompagner les entrepreneurs dans leurs premiers pas</li>
+            <li><strong>15 projets incubés</strong> lors de la première promotion (avril 2011)</li>
+          </ul>`
+      },
+      {
+        key: 'skills', label: 'Compétences & IA', dotClass: 'dot-coral',
+        html: `
+          <p><strong>Expertise commerciale IA</strong></p>
+          <ul>
+            <li><strong>Go-to-market IA agentique et LLM</strong> (Agentforce, Claude, plateformes IA enterprise)</li>
+            <li><strong>Vente enterprise cycle complet</strong> : prospection → négociation → closing</li>
+            <li><strong>Navigation multi-parties prenantes</strong> : direction générale, DSI, juridique, achats</li>
+            <li>Génération de pipeline et <strong>gestion de territoire sur marchés technologiques émergents</strong></li>
+            <li>Verticales : <strong>Médias, Tech, Télécoms, Fintech, Services</strong></li>
+          </ul>
+          <p style="margin-top:12px"><strong>Outils & plateformes</strong></p>
+          <ul>
+            <li>Salesforce CRM · Agentforce · Slack · QuickBooks</li>
+            <li>CDN, Edge Computing, streaming vidéo, cybersécurité (DDoS, WAF, DRM)</li>
+          </ul>
+          <p style="margin-top:12px"><strong>Points de différenciation</strong></p>
+          <ul>
+            <li>Capacité avérée à <strong>vendre des technologies de rupture à des acheteurs enterprise exigeants</strong></li>
+            <li>Culture entrepreneuriale : <strong>co-fondateur d'IncubaGEM</strong> (incubateur GEM, 2010)</li>
+            <li>Expérience sur <strong>5+ secteurs distincts en 15 ans</strong> — adaptabilité profonde</li>
+          </ul>`
+      },
+      {
+        key: 'formation', label: 'Formation & distinctions', dotClass: 'dot-amber',
+        html: `
+          <p><strong>Formation</strong></p>
+          <ul>
+            <li>Mastère Spécialisé <strong>HEC Entrepreneurs</strong> (Entrepreneuriat) · Grenoble École de Management · 2010–2011</li>
+            <li>DESMA (Management, Stratégie, Contrôle de gestion) · GEM · 2007–2011</li>
+            <li>Classes Préparatoires ECE · Lycée Saint Vincent Providence, Rennes · 2005–2007</li>
+          </ul>
+          <p style="margin-top:12px"><strong>Certifications & récompenses</strong></p>
+          <ul>
+            <li>Salesforce : <strong>Agentblazer Innovator · Digital Ambassador · Ranger</strong> · Accelerate Aspiring Leaders Program</li>
+            <li>Certification QuickBooks · <strong>Peak Performer FY24 · Sales Club Achiever FY24</strong></li>
+          </ul>
+          <p style="margin-top:12px"><strong>Engagement</strong></p>
+          <ul>
+            <li>Actionnaire <strong>Time for the Planet</strong> — entreprise à mission visant 1 Md€ pour lutter contre le réchauffement climatique</li>
+          </ul>
+          <p style="margin-top:12px"><strong>Langues</strong></p>
+          <ul>
+            <li><strong>Français (langue maternelle) · Anglais (bilingue)</strong> · Espagnol (niveau professionnel)</li>
+          </ul>`
+      }
+    ],
+    whyBtn: 'Vous souhaitez découvrir pourquoi je veux rejoindre Anthropic ?',
+    whyLabel: 'Pourquoi Anthropic',
+    whyStatus: 'génération...',
+    whyDone: 'complet',
+    whyHtml: `
+      <p>Quelques mois après le lancement d'Agentforce, j'ai eu un rendez-vous avec le CDO d'un grand groupe média français. Il avait vu tous les pitchs IA du marché. Il m'a posé une seule question : <strong>« Comment je sais que ça ne va pas inventer quelque chose et que je vais l'apprendre en une du Monde ? »</strong> Je n'avais pas de réponse parfaite. Mais cette question m'a marqué — parce que c'est la bonne question. C'est aussi, autant que je sache, <strong>celle à laquelle Anthropic cherche à répondre depuis le premier jour</strong>.</p>
+      <p>À travers des centaines de conversations avec des décideurs enterprise, j'ai compris ce qui distingue les entreprises qui avancent vraiment avec l'IA : tout se résume à la <strong>confiance</strong>. Claude ne ressemble pas à une démo. C'est quelque chose sur lequel on peut vraiment construire. Et ça permet de <strong>vendre honnêtement</strong> — ce qui est la seule façon dont je sais vendre.</p>
+      <p>Je veux être la personne qui apporte cela aux <strong>entreprises françaises et d'Europe du Sud</strong> — pas en survendant, mais en les aidant à identifier là où l'IA apporte une valeur réelle. C'est un marché où cette nuance compte : les acheteurs enterprise en France sont rigoureux, sceptiques, peu sensibles au bruit médiatique. <strong>J'ai passé 15 ans à apprendre à avoir ces conversations.</strong></p>
+      <p>Je m'intéresse aussi à cette mission au-delà du poste. Je suis actionnaire de Time for the Planet parce que les entreprises qu'on soutient disent quelque chose de ce en quoi on croit. <strong>L'approche d'Anthropic sur la sécurité de l'IA n'est pas un argument commercial pour moi</strong> — c'est la raison pour laquelle je préfère travailler ici plutôt qu'ailleurs. J'ai déjà construit des GTM from scratch, sur des marchés qui n'étaient pas prêts. Je sais avancer sans playbook.</p>`
+  }
 };
 
 let currentLang = 'en';
 let isRunning = false;
+let whyRevealed = false;
 
 function setLang(lang) {
   if (isRunning) return;
@@ -260,40 +327,42 @@ function setLang(lang) {
   document.getElementById('btnEN').classList.toggle('active', lang === 'en');
   document.getElementById('btnFR').classList.toggle('active', lang === 'fr');
   const btn = document.getElementById('genBtn');
-  btn.textContent = lang === 'en'
-    ? 'Generate CV with Claude · Anthropic API ↗'
-    : 'Générer le CV avec Claude · API Anthropic ↗';
+  btn.textContent = lang === 'en' ? 'Generate CV with Claude · Anthropic API ↗' : 'Générer le CV avec Claude · API Anthropic ↗';
   document.getElementById('sections').innerHTML = '';
   document.getElementById('progress').style.width = '0%';
   document.getElementById('apiStatus').textContent = 'claude-sonnet-4-20250514 · waiting';
   document.getElementById('apiDot').classList.remove('active');
+  document.getElementById('whyBtnWrap').classList.remove('visible');
+  document.getElementById('whySection').classList.remove('visible');
+  document.getElementById('whySection').style.display = 'none';
+  whyRevealed = false;
   isRunning = false;
+  btn.disabled = false;
 }
 
-async function typeText(text, el, speed) {
-  const cursor = document.createElement('span');
-  cursor.className = 'cursor';
-  el.textContent = '';
-  el.appendChild(cursor);
-  for (let i = 0; i <= text.length; i += speed) {
-    el.textContent = text.slice(0, i);
-    el.appendChild(cursor);
-    await new Promise(r => setTimeout(r, 16));
+async function typeHTML(html, el) {
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+  const nodes = Array.from(temp.childNodes);
+  el.innerHTML = '';
+  for (const node of nodes) {
+    const clone = node.cloneNode(true);
+    el.appendChild(clone);
+    await new Promise(r => setTimeout(r, 60));
   }
-  cursor.remove();
-  el.textContent = text;
 }
 
 async function startGeneration() {
   if (isRunning) return;
   isRunning = true;
+  whyRevealed = false;
 
   const btn = document.getElementById('genBtn');
   const sectionsEl = document.getElementById('sections');
   const progress = document.getElementById('progress');
   const apiDot = document.getElementById('apiDot');
   const apiStatus = document.getElementById('apiStatus');
-  const sections = CONTENT[currentLang];
+  const data = CONTENT[currentLang];
 
   btn.disabled = true;
   btn.textContent = currentLang === 'en' ? 'Generating...' : 'Génération en cours...';
@@ -301,9 +370,12 @@ async function startGeneration() {
   apiStatus.textContent = 'claude-sonnet-4-20250514 · connected';
   sectionsEl.innerHTML = '';
   progress.style.width = '0%';
+  document.getElementById('whyBtnWrap').classList.remove('visible');
+  document.getElementById('whySection').classList.remove('visible');
+  document.getElementById('whySection').style.display = 'none';
 
-  for (let i = 0; i < sections.length; i++) {
-    const s = sections[i];
+  for (let i = 0; i < data.sections.length; i++) {
+    const s = data.sections[i];
     const sectionEl = document.createElement('div');
     sectionEl.className = 'cv-section';
     sectionEl.innerHTML = `
@@ -321,19 +393,51 @@ async function startGeneration() {
     const contentEl = document.getElementById('content-' + s.key);
     const statusEl = document.getElementById('status-' + s.key);
 
-    await new Promise(r => setTimeout(r, 350));
-    const speed = Math.max(2, Math.floor(s.text.length / 180));
-    await typeText(s.text, contentEl, speed);
+    await new Promise(r => setTimeout(r, 300));
+    await typeHTML(s.html, contentEl);
 
     statusEl.textContent = currentLang === 'en' ? 'done' : 'complet';
     statusEl.style.color = '#1D9E75';
-    progress.style.width = ((i + 1) / sections.length * 100) + '%';
-    await new Promise(r => setTimeout(r, 300));
+    progress.style.width = ((i + 1) / data.sections.length * 100) + '%';
+    await new Promise(r => setTimeout(r, 250));
   }
+
+  const whyBtnWrap = document.getElementById('whyBtnWrap');
+  document.getElementById('whyBtn').textContent = data.whyBtn;
+  whyBtnWrap.classList.add('visible');
 
   btn.disabled = false;
   btn.textContent = currentLang === 'en' ? 'CV generated by Claude ✓' : 'CV généré par Claude ✓';
   apiStatus.textContent = 'claude-sonnet-4-20250514 · complete';
   isRunning = false;
+}
+
+async function revealWhy() {
+  if (whyRevealed) return;
+  whyRevealed = true;
+
+  const data = CONTENT[currentLang];
+  const whyBtnWrap = document.getElementById('whyBtnWrap');
+  const whySection = document.getElementById('whySection');
+  const whyLabel = document.getElementById('whyLabel');
+  const whyStatus = document.getElementById('whyStatus');
+  const whyContent = document.getElementById('whyContent');
+
+  whyBtnWrap.style.opacity = '0.4';
+  document.getElementById('whyBtn').disabled = true;
+
+  whyLabel.textContent = data.whyLabel;
+  whyStatus.textContent = data.whyStatus;
+  whyContent.innerHTML = '';
+  whySection.style.display = 'block';
+  await new Promise(r => setTimeout(r, 50));
+  whySection.classList.add('visible');
+
+  await new Promise(r => setTimeout(r, 400));
+  await typeHTML(data.whyHtml, whyContent);
+
+  whyStatus.textContent = data.whyDone;
+  whyStatus.style.color = '#1D9E75';
+  whyBtnWrap.style.display = 'none';
 }
 </script>
